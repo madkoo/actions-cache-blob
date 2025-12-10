@@ -15153,6 +15153,7 @@ const cacheUtils = __importStar(__nccwpck_require__(8299));
 const tar = __importStar(__nccwpck_require__(5321));
 const core = __importStar(__nccwpck_require__(7484));
 const storage_blob_1 = __nccwpck_require__(1400);
+const crypto = __importStar(__nccwpck_require__(6982));
 const fs = __importStar(__nccwpck_require__(9896));
 const path = __importStar(__nccwpck_require__(6928));
 // Re-export isFeatureAvailable from @actions/cache
@@ -15221,7 +15222,7 @@ function restoreCache(paths, primaryKey, restoreKeys, options, enableCrossOsArch
                 return cacheKey;
             }
             // Download the cache file
-            const archivePath = path.join(process.env["RUNNER_TEMP"] || "/tmp", `cache-${Date.now()}.tar`);
+            const archivePath = path.join(process.env["RUNNER_TEMP"] || "/tmp", `cache-${crypto.randomUUID()}.tar`);
             core.info(`Downloading cache from Azure Blob Storage: ${cacheKey}`);
             yield blobClient.downloadToFile(archivePath);
             // Extract the archive

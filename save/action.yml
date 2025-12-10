@@ -17,7 +17,7 @@ inputs:
     required: false
   azure-blob-container:
     description: 'Azure Blob Storage container name to save cache'
-    required: true
+    required: false
   azure-storage-account-name:
     description: 'Azure Storage account name'
     required: false

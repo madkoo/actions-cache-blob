@@ -8,6 +8,7 @@ import {
     ContainerClient,
     StorageSharedKeyCredential
 } from "@azure/storage-blob";
+import * as crypto from "crypto";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -120,7 +121,7 @@ export async function restoreCache(
         // Download the cache file
         const archivePath = path.join(
             process.env["RUNNER_TEMP"] || "/tmp",
-            `cache-${Date.now()}.tar`
+            `cache-${crypto.randomUUID()}.tar`
         );
 
         core.info(`Downloading cache from Azure Blob Storage: ${cacheKey}`);
