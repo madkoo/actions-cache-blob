@@ -1,4 +1,4 @@
-import * as cache from "@actions/cache";
+import * as cache from "../src/azureBlobCache";
 import * as core from "@actions/core";
 
 import { Events, Inputs, RefKey } from "../src/constants";
@@ -7,6 +7,7 @@ import { StateProvider } from "../src/stateProvider";
 import * as actionUtils from "../src/utils/actionUtils";
 import * as testUtils from "../src/utils/testUtils";
 
+jest.mock("../src/azureBlobCache");
 jest.mock("../src/utils/actionUtils");
 
 beforeAll(() => {
@@ -33,6 +34,12 @@ beforeAll(() => {
         (name, options) => {
             const actualUtils = jest.requireActual("../src/utils/actionUtils");
             return actualUtils.getInputAsBool(name, options);
+        }
+    );
+
+    jest.spyOn(actionUtils, "getInputAzureBlobConfig").mockImplementation(
+        () => {
+            return undefined;
         }
     );
 });
@@ -131,7 +138,7 @@ test("restore on GHES with AC available ", async () => {
         },
         false,
         undefined,
-        ""
+        undefined
     );
 
     expect(stateMock).toHaveBeenCalledWith("CACHE_KEY", key);
@@ -187,7 +194,7 @@ test("restore with too many keys should fail", async () => {
         },
         false,
         undefined,
-        ""
+        undefined
     );
     expect(failedMock).toHaveBeenCalledWith(
         `Key Validation Error: Keys are limited to a maximum of 10.`
@@ -215,7 +222,7 @@ test("restore with large key should fail", async () => {
         },
         false,
         undefined,
-        ""
+        undefined
     );
     expect(failedMock).toHaveBeenCalledWith(
         `Key Validation Error: ${key} cannot be larger than 512 characters.`
@@ -243,7 +250,7 @@ test("restore with invalid key should fail", async () => {
         },
         false,
         undefined,
-        ""
+        undefined
     );
     expect(failedMock).toHaveBeenCalledWith(
         `Key Validation Error: ${key} cannot contain commas.`
@@ -280,7 +287,7 @@ test("restore with no cache found", async () => {
         },
         false,
         undefined,
-        ""
+        undefined
     );
 
     expect(stateMock).toHaveBeenCalledWith("CACHE_KEY", key);
@@ -323,7 +330,7 @@ test("restore with restore keys and no cache found", async () => {
         },
         false,
         undefined,
-        ""
+        undefined
     );
 
     expect(stateMock).toHaveBeenCalledWith("CACHE_KEY", key);
@@ -365,7 +372,7 @@ test("restore with cache found for key", async () => {
         },
         false,
         undefined,
-        ""
+        undefined
     );
 
     expect(stateMock).toHaveBeenCalledWith("CACHE_KEY", key);
@@ -409,7 +416,7 @@ test("restore with cache found for restore key", async () => {
         },
         false,
         undefined,
-        ""
+        undefined
     );
 
     expect(stateMock).toHaveBeenCalledWith("CACHE_KEY", key);
@@ -452,7 +459,7 @@ test("restore with lookup-only set", async () => {
         },
         false,
         undefined,
-        ""
+        undefined
     );
 
     expect(stateMock).toHaveBeenCalledWith("CACHE_KEY", key);

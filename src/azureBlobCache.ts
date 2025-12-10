@@ -1,13 +1,17 @@
-import * as core from "@actions/core";
 import * as cache from "@actions/cache";
-import { BlobServiceClient, StorageSharedKeyCredential, ContainerClient } from "@azure/storage-blob";
-import { AzureBlobConfig } from "./utils/actionUtils";
-import { DownloadOptions, UploadOptions } from "@actions/cache/lib/options";
-import * as tar from "@actions/cache/lib/internal/tar";
 import * as cacheUtils from "@actions/cache/lib/internal/cacheUtils";
-import { CompressionMethod } from "@actions/cache/lib/internal/constants";
+import * as tar from "@actions/cache/lib/internal/tar";
+import { DownloadOptions, UploadOptions } from "@actions/cache/lib/options";
+import * as core from "@actions/core";
+import {
+    BlobServiceClient,
+    ContainerClient,
+    StorageSharedKeyCredential
+} from "@azure/storage-blob";
 import * as fs from "fs";
 import * as path from "path";
+
+import { AzureBlobConfig } from "./utils/actionUtils";
 
 // Re-export isFeatureAvailable from @actions/cache
 export { isFeatureAvailable } from "@actions/cache";
@@ -47,7 +51,11 @@ function getContainerClient(config: AzureBlobConfig): ContainerClient {
         );
     }
 
-    return blobServiceClient.getContainerClient(config.containerName!);
+    if (!config.containerName) {
+        throw new Error("Azure Blob Storage container name is required.");
+    }
+
+    return blobServiceClient.getContainerClient(config.containerName);
 }
 
 export async function restoreCache(
@@ -93,14 +101,19 @@ export async function restoreCache(
 
         if (!exists) {
             core.info(
-                `Cache not found for input keys: ${[primaryKey, ...(restoreKeys || [])].join(", ")}`
+                `Cache not found for input keys: ${[
+                    primaryKey,
+                    ...(restoreKeys || [])
+                ].join(", ")}`
             );
             return undefined;
         }
 
         // If lookup only, don't download
         if (options?.lookupOnly) {
-            core.info(`Cache found but not downloaded (lookup-only mode): ${cacheKey}`);
+            core.info(
+                `Cache found but not downloaded (lookup-only mode): ${cacheKey}`
+            );
             return cacheKey;
         }
 
@@ -109,7 +122,7 @@ export async function restoreCache(
             process.env["RUNNER_TEMP"] || "/tmp",
             `cache-${Date.now()}.tar`
         );
-        
+
         core.info(`Downloading cache from Azure Blob Storage: ${cacheKey}`);
         await blobClient.downloadToFile(archivePath);
 
@@ -123,7 +136,11 @@ export async function restoreCache(
         core.info(`Cache restored from key: ${cacheKey}`);
         return cacheKey;
     } catch (error) {
-        core.warning(`Failed to restore cache from Azure Blob Storage: ${(error as Error).message}`);
+        core.warning(
+            `Failed to restore cache from Azure Blob Storage: ${
+                (error as Error).message
+            }`
+        );
         return undefined;
     }
 }
@@ -157,18 +174,20 @@ export async function saveCache(
         }
 
         const compressionMethod = await cacheUtils.getCompressionMethod();
-        core.info(`Creating cache archive with compression method: ${compressionMethod}`);
-        
+        core.info(
+            `Creating cache archive with compression method: ${compressionMethod}`
+        );
+
         await tar.createTar(archiveFolder, paths, compressionMethod);
 
         // Upload to Azure Blob Storage
         core.info(`Uploading cache to Azure Blob Storage with key: ${key}`);
         const blockBlobClient = containerClient.getBlockBlobClient(key);
-        
+
         // Get file stats for upload
         const stats = fs.statSync(archivePath);
         core.info(`Cache archive size: ${stats.size} bytes`);
-        
+
         await blockBlobClient.uploadFile(archivePath, {
             blobHTTPHeaders: { blobContentType: "application/x-tar" },
             blockSize: options?.uploadChunkSize
@@ -181,11 +200,15 @@ export async function saveCache(
         }
 
         core.info(`Cache saved with key: ${key}`);
-        
+
         // Return a dummy cache ID (Azure doesn't provide one)
         return 1;
     } catch (error) {
-        core.warning(`Failed to save cache to Azure Blob Storage: ${(error as Error).message}`);
+        core.warning(
+            `Failed to save cache to Azure Blob Storage: ${
+                (error as Error).message
+            }`
+        );
         throw error;
     }
 }

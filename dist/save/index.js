@@ -15148,11 +15148,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.saveCache = exports.restoreCache = exports.isFeatureAvailable = void 0;
-const core = __importStar(__nccwpck_require__(7484));
 const cache = __importStar(__nccwpck_require__(5116));
-const storage_blob_1 = __nccwpck_require__(1400);
-const tar = __importStar(__nccwpck_require__(5321));
 const cacheUtils = __importStar(__nccwpck_require__(8299));
+const tar = __importStar(__nccwpck_require__(5321));
+const core = __importStar(__nccwpck_require__(7484));
+const storage_blob_1 = __nccwpck_require__(1400);
 const fs = __importStar(__nccwpck_require__(9896));
 const path = __importStar(__nccwpck_require__(6928));
 // Re-export isFeatureAvailable from @actions/cache
@@ -15180,6 +15180,9 @@ function getContainerClient(config) {
     else {
         throw new Error("Azure Blob Storage configuration is incomplete. Please provide either a connection string, or account name with account key/SAS token.");
     }
+    if (!config.containerName) {
+        throw new Error("Azure Blob Storage container name is required.");
+    }
     return blobServiceClient.getContainerClient(config.containerName);
 }
 function restoreCache(paths, primaryKey, restoreKeys, options, enableCrossOsArchive, azureConfig, containerName) {
@@ -15206,7 +15209,10 @@ function restoreCache(paths, primaryKey, restoreKeys, options, enableCrossOsArch
                 }
             }
             if (!exists) {
-                core.info(`Cache not found for input keys: ${[primaryKey, ...(restoreKeys || [])].join(", ")}`);
+                core.info(`Cache not found for input keys: ${[
+                    primaryKey,
+                    ...(restoreKeys || [])
+                ].join(", ")}`);
                 return undefined;
             }
             // If lookup only, don't download
@@ -15395,8 +15401,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const cache = __importStar(__nccwpck_require__(6233));
 const core = __importStar(__nccwpck_require__(7484));
+const cache = __importStar(__nccwpck_require__(6233));
 const constants_1 = __nccwpck_require__(7242);
 const utils = __importStar(__nccwpck_require__(8270));
 // Catch and log any unhandled exceptions.  These exceptions can leak out of the uploadChunk method in
@@ -15432,7 +15438,8 @@ function saveImpl(stateProvider) {
             const cachePaths = utils.getInputAsArray(constants_1.Inputs.Path, {
                 required: true
             });
-            const containerName = core.getInput(constants_1.Inputs.AzureBlobContainer);
+            const containerNameInput = core.getInput(constants_1.Inputs.AzureBlobContainer);
+            const containerName = containerNameInput || undefined;
             const azureConfig = utils.getInputAzureBlobConfig();
             const enableCrossOsArchive = utils.getInputAsBool(constants_1.Inputs.EnableCrossOsArchive);
             cacheId = yield cache.saveCache(cachePaths.slice(), primaryKey, { uploadChunkSize: utils.getInputAsInt(constants_1.Inputs.UploadChunkSize) }, enableCrossOsArchive, azureConfig, containerName);

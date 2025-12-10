@@ -1,4 +1,4 @@
-import * as cache from "@actions/cache";
+import * as cache from "../src/azureBlobCache";
 import * as core from "@actions/core";
 
 import { Events, Inputs, RefKey } from "../src/constants";
@@ -7,8 +7,10 @@ import * as actionUtils from "../src/utils/actionUtils";
 import * as testUtils from "../src/utils/testUtils";
 
 jest.mock("@actions/core");
-jest.mock("@actions/cache");
+jest.mock("../src/azureBlobCache");
 jest.mock("../src/utils/actionUtils");
+
+jest.spyOn(require("../src/utils/actionUtils"), "getInputAzureBlobConfig").mockImplementation(() => undefined);
 
 beforeAll(() => {
     jest.spyOn(core, "getInput").mockImplementation((name, options) => {
@@ -111,7 +113,7 @@ test("save with valid inputs uploads a cache", async () => {
         },
         false,
         undefined,
-        ""
+        undefined
     );
 
     expect(failedMock).toHaveBeenCalledTimes(0);

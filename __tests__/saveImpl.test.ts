@@ -1,4 +1,4 @@
-import * as cache from "@actions/cache";
+import * as cache from "../src/azureBlobCache";
 import * as core from "@actions/core";
 
 import { Events, Inputs, RefKey } from "../src/constants";
@@ -8,7 +8,7 @@ import * as actionUtils from "../src/utils/actionUtils";
 import * as testUtils from "../src/utils/testUtils";
 
 jest.mock("@actions/core");
-jest.mock("@actions/cache");
+jest.mock("../src/azureBlobCache");
 jest.mock("../src/utils/actionUtils");
 
 beforeAll(() => {
@@ -52,6 +52,12 @@ beforeAll(() => {
         const actualUtils = jest.requireActual("../src/utils/actionUtils");
         return actualUtils.isValidEvent();
     });
+
+    jest.spyOn(actionUtils, "getInputAzureBlobConfig").mockImplementation(
+        () => {
+            return undefined;
+        }
+    );
 });
 
 beforeEach(() => {
@@ -172,7 +178,7 @@ test("save on GHES with AC available", async () => {
         },
         false,
         undefined,
-        ""
+        undefined
     );
 
     expect(failedMock).toHaveBeenCalledTimes(0);
@@ -270,7 +276,7 @@ test("save with large cache outputs warning", async () => {
         expect.anything(),
         false,
         undefined,
-        ""
+        undefined
     );
 
     expect(logWarningMock).toHaveBeenCalledTimes(1);
@@ -319,7 +325,7 @@ test("save with reserve cache failure outputs warning", async () => {
         expect.anything(),
         false,
         undefined,
-        ""
+        undefined
     );
 
     expect(logWarningMock).toHaveBeenCalledWith(
@@ -364,7 +370,7 @@ test("save with server error outputs warning", async () => {
         expect.anything(),
         false,
         undefined,
-        ""
+        undefined
     );
 
     expect(logWarningMock).toHaveBeenCalledTimes(1);
@@ -411,7 +417,7 @@ test("save with valid inputs uploads a cache", async () => {
         },
         false,
         undefined,
-        ""
+        undefined
     );
 
     expect(failedMock).toHaveBeenCalledTimes(0);
