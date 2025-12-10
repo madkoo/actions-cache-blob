@@ -1,8 +1,16 @@
 import * as cache from "@actions/cache";
 import * as core from "@actions/core";
-import { S3ClientConfig } from "@aws-sdk/client-s3";
 
 import { Inputs, RefKey } from "../constants";
+
+export interface AzureBlobConfig {
+    accountName?: string;
+    accountKey?: string;
+    connectionString?: string;
+    sasToken?: string;
+    containerName?: string;
+    endpoint?: string;
+}
 
 export function isGhes(): boolean {
     const ghUrl = new URL(
@@ -80,31 +88,30 @@ Otherwise please upgrade to GHES version >= 3.5 and If you are also using Github
     return false;
 }
 
-export function getInputS3ClientConfig(): S3ClientConfig | undefined {
-    const s3BucketName = core.getInput(Inputs.AWSS3Bucket);
-    if (!s3BucketName) {
+export function getInputAzureBlobConfig(): AzureBlobConfig | undefined {
+    const containerName = core.getInput(Inputs.AzureBlobContainer);
+    if (!containerName) {
         return undefined;
     }
 
-    const s3config = {
-        credentials: {
-            accessKeyId:
-                core.getInput(Inputs.AWSAccessKeyId) ||
-                process.env["AWS_ACCESS_KEY_ID"],
-            secretAccessKey:
-                core.getInput(Inputs.AWSSecretAccessKey) ||
-                process.env["AWS_SECRET_ACCESS_KEY"],
-            sessionToken:
-                core.getInput(Inputs.AWSSessionToken) ||
-                process.env["AWS_SESSION_TOKEN"]
-        },
-        region: core.getInput(Inputs.AWSRegion) || process.env["AWS_REGION"],
-        endpoint: core.getInput(Inputs.AWSEndpoint),
-        bucketEndpoint: core.getBooleanInput(Inputs.AWSS3BucketEndpoint),
-        forcePathStyle: core.getBooleanInput(Inputs.AWSS3ForcePathStyle)
-    } as S3ClientConfig;
+    const azureConfig = {
+        accountName:
+            core.getInput(Inputs.AzureStorageAccountName) ||
+            process.env["AZURE_STORAGE_ACCOUNT"],
+        accountKey:
+            core.getInput(Inputs.AzureStorageAccountKey) ||
+            process.env["AZURE_STORAGE_KEY"],
+        connectionString:
+            core.getInput(Inputs.AzureStorageConnectionString) ||
+            process.env["AZURE_STORAGE_CONNECTION_STRING"],
+        sasToken:
+            core.getInput(Inputs.AzureStorageSasToken) ||
+            process.env["AZURE_STORAGE_SAS_TOKEN"],
+        containerName: containerName,
+        endpoint: core.getInput(Inputs.AzureBlobEndpoint)
+    } as AzureBlobConfig;
 
-    core.debug("Enable S3 backend mode.");
+    core.debug("Enable Azure Blob Storage backend mode.");
 
-    return s3config;
+    return azureConfig;
 }

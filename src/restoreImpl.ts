@@ -35,8 +35,8 @@ export async function restoreImpl(
         const cachePaths = utils.getInputAsArray(Inputs.Path, {
             required: true
         });
-        const s3BucketName = core.getInput(Inputs.AWSS3Bucket);
-        const s3config = utils.getInputS3ClientConfig();
+        const containerName = core.getInput(Inputs.AzureBlobContainer);
+        const azureConfig = utils.getInputAzureBlobConfig();
 
         const enableCrossOsArchive = utils.getInputAsBool(
             Inputs.EnableCrossOsArchive
@@ -50,8 +50,8 @@ export async function restoreImpl(
             restoreKeys,
             { lookupOnly: lookupOnly },
             enableCrossOsArchive,
-            s3config,
-            s3BucketName
+            azureConfig,
+            containerName
         );
 
         if (!cacheKey) {
