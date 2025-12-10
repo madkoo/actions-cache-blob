@@ -1,4 +1,4 @@
-import * as cache from "@actions/cache";
+import * as cache from "../azureBlobCache";
 import * as core from "@actions/core";
 
 import { Inputs, RefKey } from "../constants";

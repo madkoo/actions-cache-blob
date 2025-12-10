@@ -23,6 +23,24 @@ inputs:
     description: 'Check if a cache entry exists for the given input(s) (key, restore-keys) without downloading the cache'
     default: 'false'
     required: false
+  azure-blob-container:
+    description: 'Azure Blob Storage container name to save cache'
+    required: true
+  azure-storage-account-name:
+    description: 'Azure Storage account name'
+    required: false
+  azure-storage-account-key:
+    description: 'Azure Storage account key'
+    required: false
+  azure-storage-connection-string:
+    description: 'Azure Storage connection string (alternative to account name/key)'
+    required: false
+  azure-storage-sas-token:
+    description: 'Azure Storage SAS token'
+    required: false
+  azure-blob-endpoint:
+    description: 'Custom Azure Blob Storage endpoint (optional)'
+    required: false
 outputs:
   cache-hit:
     description: 'A boolean value to indicate an exact match was found for the primary key'
