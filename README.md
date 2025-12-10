@@ -1,16 +1,16 @@
-# whywaita/actions-cache-s3
+# madkoo/actions-cache-blob
 
-`whywaita/actions-cache-s3` is a forked Action from [@actions/cache](https://github.com/actions/cache).
+`madkoo/actions-cache-blob` is a forked Action from [@actions/cache](https://github.com/actions/cache).
 
-This Action provides Amazon Web Services S3 backend (and compatible software) for @actions/cache.
+This Action provides Azure Blob Storage backend for @actions/cache.
 
-It supports assuming credentials from `aws-actions/configure-aws-credentials` directly from `env`, or you can supply them through inputs.
+It supports Azure Storage authentication through connection strings, account keys, or SAS tokens. Credentials can be provided directly from `env`, or you can supply them through inputs.
 
 ## Usage
 
 ```yaml
 - name: Cache multiple paths
-  uses: whywaita/actions-cache-s3@v2
+  uses: madkoo/actions-cache-blob@v1
   with:
     path: |
       ~/cache
@@ -18,17 +18,17 @@ It supports assuming credentials from `aws-actions/configure-aws-credentials` di
     key: ${{ github.repository }}-${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     restore-keys: |
       ${{ github.repository }}-${{ runner.os }}-go-
-    aws-s3-bucket: ${{ secrets.AWS_S3_BUCKET_NAME }}
-    aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }} # Optionally supply session token from aws-actions/configure-aws-credentials
-    aws-region: us-east-1                               # Optional
-    aws-endpoint: https://example.com                   # Optional
-    aws-s3-bucket-endpoint: false                       # Optional
-    aws-s3-force-path-style: true                       # Optional
+    azure-blob-container: ${{ secrets.AZURE_BLOB_CONTAINER }}
+    azure-storage-account-name: ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}
+    azure-storage-account-key: ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}
+    # Alternatively, use connection string:
+    # azure-storage-connection-string: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+    # Or SAS token:
+    # azure-storage-sas-token: ${{ secrets.AZURE_STORAGE_SAS_TOKEN }}
+    azure-blob-endpoint: https://mystorageaccount.blob.core.windows.net # Optional
 ```
 
-Please see [actions.yml](https://github.com/whywaita/actions-cache-s3/blob/main/action.yml) about input parameters.
+Please see [action.yml](https://github.com/madkoo/actions-cache-blob/blob/main/action.yml) about input parameters.
 # Cache action
 
 This action allows caching dependencies and build outputs to improve workflow execution time.
@@ -245,9 +245,9 @@ See [Using contexts to create cache keys](https://help.github.com/en/actions/con
 
 ## Cache Limits
 
-Actions-cache-s3 don't have any limits in terms of size or age of the cache.
+Actions-cache-blob doesn't have any limits in terms of size or age of the cache when using Azure Blob Storage.
 
-Eviction may be handled separately, for example using [S3 Lifecycle](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html).
+Eviction may be handled separately, for example using [Azure Blob Storage Lifecycle Management](https://learn.microsoft.com/en-us/azure/storage/blobs/lifecycle-management-overview).
 
 ## Skipping steps based on cache-hit
 

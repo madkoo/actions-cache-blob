@@ -1,4 +1,4 @@
-import * as cache from "@actions/cache";
+import * as cache from "../src/azureBlobCache";
 import * as core from "@actions/core";
 
 import { Events, RefKey } from "../src/constants";
@@ -7,6 +7,8 @@ import * as actionUtils from "../src/utils/actionUtils";
 import * as testUtils from "../src/utils/testUtils";
 
 jest.mock("../src/utils/actionUtils");
+
+jest.spyOn(require("../src/utils/actionUtils"), "getInputAzureBlobConfig").mockImplementation(() => undefined);
 
 beforeAll(() => {
     jest.spyOn(actionUtils, "isExactKeyMatch").mockImplementation(
@@ -84,7 +86,7 @@ test("restore with no cache found", async () => {
         },
         false,
         undefined,
-        ""
+        undefined
     );
 
     expect(outputMock).toHaveBeenCalledWith("cache-primary-key", key);
@@ -128,7 +130,7 @@ test("restore with restore keys and no cache found", async () => {
         },
         false,
         undefined,
-        ""
+        undefined
     );
 
     expect(outputMock).toHaveBeenCalledWith("cache-primary-key", key);
@@ -169,7 +171,7 @@ test("restore with cache found for key", async () => {
         },
         false,
         undefined,
-        ""
+        undefined
     );
 
     expect(outputMock).toHaveBeenCalledWith("cache-primary-key", key);
@@ -214,7 +216,7 @@ test("restore with cache found for restore key", async () => {
         },
         false,
         undefined,
-        ""
+        undefined
     );
 
     expect(outputMock).toHaveBeenCalledWith("cache-primary-key", key);

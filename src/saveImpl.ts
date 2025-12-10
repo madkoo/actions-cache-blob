@@ -1,6 +1,6 @@
-import * as cache from "@actions/cache";
 import * as core from "@actions/core";
 
+import * as cache from "./azureBlobCache";
 import { Events, Inputs, State } from "./constants";
 import { IStateProvider } from "./stateProvider";
 import * as utils from "./utils/actionUtils";
@@ -51,8 +51,9 @@ async function saveImpl(stateProvider: IStateProvider): Promise<number | void> {
         const cachePaths = utils.getInputAsArray(Inputs.Path, {
             required: true
         });
-        const s3BucketName = core.getInput(Inputs.AWSS3Bucket);
-        const s3config = utils.getInputS3ClientConfig();
+        const containerNameInput = core.getInput(Inputs.AzureBlobContainer);
+        const containerName = containerNameInput || undefined;
+        const azureConfig = utils.getInputAzureBlobConfig();
 
         const enableCrossOsArchive = utils.getInputAsBool(
             Inputs.EnableCrossOsArchive
@@ -63,8 +64,8 @@ async function saveImpl(stateProvider: IStateProvider): Promise<number | void> {
             primaryKey,
             { uploadChunkSize: utils.getInputAsInt(Inputs.UploadChunkSize) },
             enableCrossOsArchive,
-            s3config,
-            s3BucketName
+            azureConfig,
+            containerName
         );
 
         if (cacheId != -1) {

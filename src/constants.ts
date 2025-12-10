@@ -6,14 +6,12 @@ export enum Inputs {
     EnableCrossOsArchive = "enableCrossOsArchive", // Input for cache, restore, save action
     FailOnCacheMiss = "fail-on-cache-miss", // Input for cache, restore action
     LookupOnly = "lookup-only", // Input for cache, restore action
-    AWSS3Bucket = "aws-s3-bucket",
-    AWSAccessKeyId = "aws-access-key-id",
-    AWSSecretAccessKey = "aws-secret-access-key",
-    AWSSessionToken = "aws-session-token",
-    AWSRegion = "aws-region",
-    AWSEndpoint = "aws-endpoint",
-    AWSS3BucketEndpoint = "aws-s3-bucket-endpoint",
-    AWSS3ForcePathStyle = "aws-s3-force-path-style"
+    AzureStorageAccountName = "azure-storage-account-name",
+    AzureStorageAccountKey = "azure-storage-account-key",
+    AzureStorageConnectionString = "azure-storage-connection-string",
+    AzureStorageSasToken = "azure-storage-sas-token",
+    AzureBlobContainer = "azure-blob-container",
+    AzureBlobEndpoint = "azure-blob-endpoint"
 }
 
 export enum Outputs {

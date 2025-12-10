@@ -1,6 +1,6 @@
-name: 'Cache S3'
-description: 'actions/cache@v2 for AWS S3 and compatible software (forked Actions)'
-author: 'whywaita'
+name: 'Cache Azure Blob'
+description: 'actions/cache@v3 for Azure Blob Storage (forked from whywaita/actions-cache-s3)'
+author: 'madkoo'
 inputs:
   path:
     description: 'A list of files, directories, and wildcard patterns to cache and restore'
@@ -26,32 +26,24 @@ inputs:
     description: 'Check if a cache entry exists for the given input(s) (key, restore-keys) without downloading the cache'
     default: 'false'
     required: false
-  aws-s3-bucket:
-    description: 'An AWS S3 bucket to save cache'
-    required: true
-  aws-access-key-id:
-    description: 'An AWS access key id to access the bucket'
+  azure-blob-container:
+    description: 'Azure Blob Storage container name to save cache'
     required: false
-  aws-secret-access-key:
-    description: 'An AWS secret access key to access the bucket'
+  azure-storage-account-name:
+    description: 'Azure Storage account name'
     required: false
-  aws-session-token:
-    description: 'An AWS session token to access the bucket'
+  azure-storage-account-key:
+    description: 'Azure Storage account key'
     required: false
-  aws-region:
-    description: 'An AWS region where the bucket is located'
+  azure-storage-connection-string:
+    description: 'Azure Storage connection string (alternative to account name/key)'
     required: false
-  aws-endpoint:
-    description: 'An endpoint of AWS S3 (for compatible software)'
+  azure-storage-sas-token:
+    description: 'Azure Storage SAS token'
     required: false
-  aws-s3-bucket-endpoint:
-    description: 'Whether to use the bucket name as the endpoint for this request.'
+  azure-blob-endpoint:
+    description: 'Custom Azure Blob Storage endpoint (optional)'
     required: false
-    default: 'true'
-  aws-s3-force-path-style:
-    description: 'Whether to force path style URLs for S3 objects.'
-    required: false
-    default: 'false'
 outputs:
   cache-hit:
     description: 'A boolean value to indicate an exact match was found for the primary key'

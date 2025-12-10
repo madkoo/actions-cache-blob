@@ -1,6 +1,6 @@
-import * as cache from "@actions/cache";
 import * as core from "@actions/core";
 
+import * as cache from "./azureBlobCache";
 import { Events, Inputs, Outputs, State } from "./constants";
 import {
     IStateProvider,
@@ -35,8 +35,9 @@ export async function restoreImpl(
         const cachePaths = utils.getInputAsArray(Inputs.Path, {
             required: true
         });
-        const s3BucketName = core.getInput(Inputs.AWSS3Bucket);
-        const s3config = utils.getInputS3ClientConfig();
+        const containerNameInput = core.getInput(Inputs.AzureBlobContainer);
+        const containerName = containerNameInput || undefined;
+        const azureConfig = utils.getInputAzureBlobConfig();
 
         const enableCrossOsArchive = utils.getInputAsBool(
             Inputs.EnableCrossOsArchive
@@ -50,8 +51,8 @@ export async function restoreImpl(
             restoreKeys,
             { lookupOnly: lookupOnly },
             enableCrossOsArchive,
-            s3config,
-            s3BucketName
+            azureConfig,
+            containerName
         );
 
         if (!cacheKey) {
